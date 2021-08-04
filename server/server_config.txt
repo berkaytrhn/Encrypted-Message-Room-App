@@ -6,6 +6,7 @@
 # AES -> 2
 # DES -> 1
 port=8080
+# can be also DES
 method=AES
 # can be also 'OFB'
 mode=CBC
