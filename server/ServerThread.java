@@ -18,14 +18,13 @@ public class ServerThread implements Runnable{
         this.threads = threads;
 
         //sending init vectors, successful
-        sendReceivedMessage(Server.stringInitVectorAES);
-        sendReceivedMessage(Server.stringInitVectorDES);
+        sendReceivedMessage(Server.stringInitVector);
 
 
 
-        //sending secret keys ,trying
-        sendReceivedMessage(String.format("%s %s",Server.stringAESKey,"AES"));
-        sendReceivedMessage(String.format("%s %s",Server.stringDESKey,"DES"));
+        //sending secret keys ,successful
+        //KEY AES
+        sendReceivedMessage(String.format("%s %s %s",Server.stringKey,Server.arguments.get("method"), Server.arguments.get("mode")));
     }
 
     public void startCommunicationThread(){

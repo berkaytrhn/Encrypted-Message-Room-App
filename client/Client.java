@@ -17,22 +17,24 @@ import javafx.stage.Stage;
 import javax.crypto.SecretKey;
 import java.io.*;
 import java.net.Socket;
+import java.util.HashMap;
 
 
 public class Client extends Application implements EventHandler<ActionEvent> {
 
-    public static SecretKey AESKey;
-    public static SecretKey DESKey;
-    public static byte[] initVectorAES;
-    public static byte[] initVectorDES;
-    public static String method,mode;
+    public static SecretKey key;
+    public static byte[] initVector;
+    public static String method;
+    public static String mode;
     public static Thread clientThread;
     boolean connected;
     Stage window;
-    Button encrypt,sendMessage,connect,disconnect;
-    TextArea userInput,encryptedText;
-    public static RadioButton AES,DES,CBC,OFB;
-    Socket socket;
+    public static Button sendMessage;
+    Button connect;
+    Button disconnect;
+    TextArea userInput;
+    //public static RadioButton AES,DES,CBC,OFB;
+    public static Socket socket;
     public static PrintWriter dataOut;
     public static TextArea chatBox;
     public static Button okay,cancel;
@@ -40,8 +42,16 @@ public class Client extends Application implements EventHandler<ActionEvent> {
     public static String userName;
     UserNameAlertBox alertBox;
     Label status;
+    public static HashMap<String,String> arguments;
 
     public static void main(String[] args) throws Exception {
+        try {
+            Client.arguments = Client.argumentParser(args[0]);
+        }catch(ArrayIndexOutOfBoundsException e){
+            System.out.println("An error occurred, possible solutions: 'running with config file argument' or 'checking config file contents.'");
+            System.exit(1);
+            return;
+        }
         launch(args);
     }
 
@@ -57,10 +67,11 @@ public class Client extends Application implements EventHandler<ActionEvent> {
 
         //creating text areas
         TextArea input = new TextArea();
-        input.setPrefWidth(250);
+        input.setPrefWidth(600);
         input.setPrefHeight(100);
         input.setStyle("-fx-border-color: white");
-        if(editable){
+        this.userInput = input;
+        /*if(editable){
             //user input
             input.setEditable(true);
             this.userInput = input;
@@ -68,7 +79,7 @@ public class Client extends Application implements EventHandler<ActionEvent> {
             //crypted text
             input.setEditable(false);
             this.encryptedText = input;
-        }
+        }*/
 
 
         textField.getChildren().addAll(fieldName,input);
@@ -77,7 +88,7 @@ public class Client extends Application implements EventHandler<ActionEvent> {
 
     }
 
-    public VBox configureRadioLayout(String labelText,String firstText,String secondText){
+    /*public VBox configureRadioLayout(String labelText,String firstText,String secondText){
         //Title part
         VBox methodLayout = new VBox();
         methodLayout.setSpacing(0);
@@ -134,7 +145,7 @@ public class Client extends Application implements EventHandler<ActionEvent> {
 
         return methodLayout;
 
-    }
+    }*/
 
     public HBox createConnectionButtons(String iconSource1,String iconSource2){
         HBox connectionLayout = new HBox();
@@ -191,7 +202,7 @@ public class Client extends Application implements EventHandler<ActionEvent> {
         chatBox.setText(chatBox.getText()+message+"\n");
     }
 
-    public static void controlRadioButtons(){
+    /*public static void controlRadioButtons(){
         if(Client.AES.isSelected()){
             //AES
             Client.method = "AES";
@@ -213,7 +224,7 @@ public class Client extends Application implements EventHandler<ActionEvent> {
                 Client.mode = "OFB";
             }
         }
-    }
+    }*/
 
     public void onWindowCloseHandler(){
         try{
@@ -223,7 +234,7 @@ public class Client extends Application implements EventHandler<ActionEvent> {
         }
         try {
             clientThread.interrupt();
-            socket.close();
+            Client.socket.close();
         } catch (NullPointerException | IOException e) {
             //System.out.println("thread already stopped,writer and socket is also closed, program is stopping");
             e.printStackTrace();
@@ -248,16 +259,16 @@ public class Client extends Application implements EventHandler<ActionEvent> {
         bottomTextPart.setStyle("-fx-border-color: gray");
 
         //creating buttons
-        encrypt = createButton("Encrypt",false, "send.png");
-        encrypt.setAlignment(Pos.CENTER);
-        encrypt.setPrefWidth(100);
-        encrypt.setPrefHeight(25);
+        //encrypt = createButton("Encrypt",false, "send.png");
+        //encrypt.setAlignment(Pos.CENTER);
+        //encrypt.setPrefWidth(100);
+        //encrypt.setPrefHeight(25);
 
         sendMessage = createButton("Send",true, "send.png");
         sendMessage.setAlignment(Pos.CENTER);
         sendMessage.setPrefWidth(100);
-        sendMessage.setPrefHeight(35);
-        sendMessage.setDisable(true);
+        sendMessage.setPrefHeight(150);
+        //sendMessage.setDisable(true);
 
 
         //connection status
@@ -266,14 +277,14 @@ public class Client extends Application implements EventHandler<ActionEvent> {
 
         //creating TextField VBoxes
         VBox input = creatingBottomTextFields("Text",true);
-        VBox output = creatingBottomTextFields("Crypted Text",false);
+        //VBox output = creatingBottomTextFields("Crypted Text",false);
 
 
-        bottomTextPart.getChildren().addAll(input,output,encrypt,sendMessage);
+        bottomTextPart.getChildren().addAll(input, sendMessage);
 
 
-        bottomTextPart.setMargin(encrypt,new Insets(50,0,0,0));
-        bottomTextPart.setMargin(sendMessage,new Insets(45,0,0,0));
+        //bottomTextPart.setMargin(encrypt,new Insets(50,0,0,0));
+        bottomTextPart.setMargin(sendMessage,new Insets(0,0,0,0));
 
         bottomLayout.getChildren().addAll(bottomTextPart,status);
         bottomLayout.setMargin(status,new Insets(0,0,5,5));
@@ -297,12 +308,12 @@ public class Client extends Application implements EventHandler<ActionEvent> {
         upperMenu.setSpacing(20);
 
 
-        VBox methodLayout = configureRadioLayout("Method","AES","DES");
-        VBox modeLayout = configureRadioLayout("Mode","CBC","OFB");
+        //VBox methodLayout = configureRadioLayout("Method","AES","DES");
+        //VBox modeLayout = configureRadioLayout("Mode","CBC","OFB");
         HBox connectionLayout = createConnectionButtons("play.png","stop.png");
 
         //adding child layouts to upperMenu layout
-        upperMenu.getChildren().addAll(connectionLayout,methodLayout,modeLayout);
+        upperMenu.getChildren().addAll(connectionLayout);
         upperMenu.setMargin(connectionLayout,new Insets(15,10,0,80));
         upperMenu.setStyle("-fx-border-color: gray");
         upperMenu.setPadding(new Insets(10,0,10,0));
@@ -316,13 +327,13 @@ public class Client extends Application implements EventHandler<ActionEvent> {
 
         StackPane pane = new StackPane();
 
-        Label mainText = new Label();
-        mainText.setText("Server");
-        mainText.setPadding(new Insets(0,0,-30,10));
+        //Label mainText = new Label();
+        //mainText.setText("Server");
+        //mainText.setPadding(new Insets(0,0,-30,10));
 
 
 
-        pane.getChildren().add(mainText);
+        //pane.getChildren().add(mainText);
         pane.setAlignment(Pos.CENTER_LEFT);
 
 
@@ -357,20 +368,23 @@ public class Client extends Application implements EventHandler<ActionEvent> {
         window.show();
     }
 
+    public static void updateSendMessageButton(boolean clickable){
+        Client.sendMessage.setDisable(clickable);
+    }
+
     @Override
     public void handle(ActionEvent event) {
-        if (event.getSource().equals(this.encrypt)) {
-            controlRadioButtons();
+        /*if (event.getSource().equals(this.encrypt)) {
+            //controlRadioButtons();
 
             //get text inside textbox and encrypt
             String message = this.userInput.getText();
             String encryptedMessage="";
             try {
-                if(Client.method.equals("AES")){
-                    encryptedMessage = MyCrypt.encryption(String.format("%s/%s/PKCS5PADDING", Client.method, Client.mode), Client.AESKey,message, Client.initVectorAES);
-                }else if(Client.method.equals("DES")){
+                encryptedMessage = MyCrypt.encryption(String.format("%s/%s/PKCS5PADDING", Client.method, Client.mode), Client.key,message, Client.initVector);
+                *//*else if(Client.method.equals("DES")){
                     encryptedMessage = MyCrypt.encryption(String.format("%s/%s/PKCS5PADDING", Client.method, Client.mode), Client.DESKey,message, Client.initVectorDES);
-                }
+                }*//*
             } catch (Exception e) {
                 System.out.println("Error while encryption operation");
                 e.printStackTrace();
@@ -382,13 +396,16 @@ public class Client extends Application implements EventHandler<ActionEvent> {
             this.userInput.setText("");
             //activate send button
             this.sendMessage.setDisable(false);
-        } else if (event.getSource().equals(this.sendMessage)) {
+        }*/
+        if (event.getSource().equals(Client.sendMessage)) {
             if(connected){
-                this.sendMessage.setDisable(true);
+                Client.sendMessage.setDisable(true);
                 try {
                     //real sending operation via sockets
-                    ReceiveMessageThread.sendMessage(this.encryptedText.getText(),this.socket);
-                } catch (IOException e) {
+                    String encryptedMessage = ClientMyCrypt.encryption(String.format("%s/%s/PKCS5PADDING", Client.method, Client.mode), Client.key, this.userInput.getText(), Client.initVector);
+                    ReceiveMessageThread.sendMessage(encryptedMessage, Client.socket);
+                    this.userInput.setText("");
+                } catch (Exception e) {
                     e.printStackTrace();
                     //System.out.println("Error on sending message");
                 }
@@ -413,7 +430,7 @@ public class Client extends Application implements EventHandler<ActionEvent> {
             try {
                 dataOut.close();
                 try {
-                    socket.close();
+                    Client.socket.close();
                 } catch (IOException e) {
                     e.printStackTrace();
                     //System.out.println("Error while closing socket connections");
@@ -423,7 +440,7 @@ public class Client extends Application implements EventHandler<ActionEvent> {
             }catch (NullPointerException e){
                 //did not send any message and disconnected
                 try {
-                    socket.close();
+                    Client.socket.close();
                 } catch (IOException f) {
                     f.printStackTrace();
                     //System.out.println("Error while closing socket connections");
@@ -444,12 +461,14 @@ public class Client extends Application implements EventHandler<ActionEvent> {
                 userName = userNameInput.getText();
                 status.setText("Connected : "+userName);
                 alertBox.closeWindow();
-                controlRadioButtons();
+                //controlRadioButtons();
                 try {
-                    this.socket = ReceiveMessageThread.Client();
+                    Client.socket = ReceiveMessageThread.Client();
                 } catch (IOException e) {
                     e.printStackTrace();
-                    //System.out.println("Error on Connect");
+                    System.out.println("Error on Connect");
+                    this.connect.setDisable(false);
+                    this.disconnect.setDisable(true);
                 }
             }else{
                 //invalid username
@@ -459,6 +478,20 @@ public class Client extends Application implements EventHandler<ActionEvent> {
         }
     }
 
+    public static HashMap<String, String> argumentParser(String path) throws IOException {
+        String content = MyClientFileReader.fileReader(path);
+
+        HashMap<String,String> args = new HashMap<String,String>();
+        for(String line: content.split("\n")){
+            if (line.charAt(0) == '#'){
+                // comment line
+                continue;
+            }
+            String[] lineArray = line.split("=");
+            args.put(lineArray[0], lineArray[1]);
+        }
+        return args;
+    }
 
 
 }

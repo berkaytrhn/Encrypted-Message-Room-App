@@ -2,12 +2,13 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.net.*;
 import java.io.*;
+import java.util.Arrays;
 import java.util.Base64;
 
 public class ReceiveMessageThread {
 
     public static Socket Client() throws IOException{
-        Socket socket = new Socket("localhost",8080);
+        Socket socket = new Socket(Client.arguments.get("server"), Integer.parseInt(Client.arguments.get("port")));
         ClientThread inputThread = new ClientThread(socket);
         inputThread.startThread();
         return socket;
@@ -68,25 +69,29 @@ public class ReceiveMessageThread {
 
                         //control radio buttons
                         if (message.split("\t").length == 1) {
-                            if(message.split(" ").length == 2){
+                            if(message.split(" ").length == 3){
                                 //keys
                                 String[] array = message.split(" ");
                                 String key = array[0];
                                 String method = array[1];
-                                if(method.equals("AES")){
-                                    Client.AESKey = convertStringToKey(key,"AES");
-                                }else if(method.equals("DES")){
-                                    Client.DESKey = convertStringToKey(key,"DES");
+                                //init method and mode
+                                Client.mode = array[2];
+                                Client.method = array[1];
+
+                                if(method.trim().equals("AES")){
+                                    Client.key = convertStringToKey(key,"AES");
+                                }else if(method.trim().equals("DES")){
+                                    Client.key = convertStringToKey(key,"DES");
                                 }else{
                                     //System.out.println("error while send keys");
                                 }
                             }else{
                                 if(message.split(" ").length == 8){
                                     //DES vector
-                                    Client.initVectorDES = convertInitVector(message,8);
+                                    Client.initVector = convertInitVector(message,8);
                                 }else if(message.split(" ").length == 16){
                                     //AES vector
-                                    Client.initVectorAES = convertInitVector(message,16);
+                                    Client.initVector = convertInitVector(message,16);
                                 }else{
                                     //System.out.println("init vector gonderilirken problem olmus!!");
                                 }
@@ -95,21 +100,22 @@ public class ReceiveMessageThread {
                         } else {
                             String userName = message.split("\t")[0];
                             String encryptedMessage = message.split("\t")[1];
-                            Client.printChatBox(encryptedMessage);
+                            //Client.printChatBox(encryptedMessage);
                             String realMessage="";
                             //decryption operation
                             try {
-                                Client.controlRadioButtons();
-                                if(Client.method.equals("AES")){
-                                    realMessage = MyCrypt.decryption(String.format("%s/%s/PKCS5PADDING", Client.method, Client.mode), Client.AESKey,encryptedMessage, Client.initVectorAES);
-                                }else if(Client.method.equals("DES")){
-                                    realMessage = MyCrypt.decryption(String.format("%s/%s/PKCS5PADDING", Client.method, Client.mode), Client.DESKey,encryptedMessage, Client.initVectorDES);
-                                }
+                                //Client.controlRadioButtons();
+                                realMessage = ClientMyCrypt.decryption(String.format("%s/%s/PKCS5PADDING", Client.method, Client.mode), Client.key, encryptedMessage, Client.initVector);
+//                                else if(Client.method.equals("DES")){
+//                                    realMessage = MyCrypt.decryption(String.format("%s/%s/PKCS5PADDING", Client.method, Client.mode), Client.key,encryptedMessage, Client.initVector);
+//                                }
                             } catch (Exception e) {
                                 //System.out.println("Error while decryption operation");
                                 e.printStackTrace();
                             }
-                                Client.printChatBox(String.format("%s> %s",userName,realMessage));
+                            Client.printChatBox(String.format("%s: %s",userName,realMessage));
+                            //message received, set disable false
+                            Client.updateSendMessageButton(false);
                         }
 
 

@@ -1,36 +1,36 @@
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.Scanner;
+import java.util.HashMap;
 import javax.crypto.SecretKey;
 
 public class Server {
-    public static String stringInitVectorAES;
-    public static String stringInitVectorDES;
-    public static SecretKey AESKey;
-    public static SecretKey DESKey;
-    public static String stringAESKey;
-    public static String stringDESKey;
-    public static byte[] vectorAES;
-    public static byte[] vectorDES;
+    public static String stringInitVector;
+    public static SecretKey Key;
+    public static String stringKey;
+    public static byte[] vector; //init vector
+
+    public static HashMap<String,String> arguments;
 
     public static void main(String[] args) throws Exception {
-        ServerSocket serverSocket = new ServerSocket(8080);
+        try {
+            String configPath = args[0];
+            arguments = Server.argumentParser(configPath);
+        }catch(ArrayIndexOutOfBoundsException e){
+            System.out.println("An error occurred, possible solutions: 'running with config file argument' or 'checking config file contents.'");
+            return;
+        }
+        ServerSocket serverSocket = new ServerSocket(Integer.parseInt(arguments.get("port")));
         Threads threads = new Threads();
 
 
         //creating keys and init vectors
-        Server.AESKey = MyCrypt.generateKey("AES",256);
-        Server.DESKey = MyCrypt.generateKey("DES",56);
-        byte[] initVectorAES = MyCrypt.createInitializationVector(16);
-        byte[] initVectorDES = MyCrypt.createInitializationVector(8);
-        Server.vectorAES = initVectorAES;
-        Server.vectorDES = initVectorDES;
-        Server.stringInitVectorAES = convertInitVector(initVectorAES);
-        Server.stringInitVectorDES = convertInitVector(initVectorDES);
-        Server.stringAESKey = ServerThread.convertKeyToString(Server.AESKey);
-        Server.stringDESKey = ServerThread.convertKeyToString(Server.DESKey);
+
+        Server.Key = MyCrypt.generateKey(arguments.get("method"),Integer.parseInt(arguments.get("key_size")));
+        byte[] initVector = MyCrypt.createInitializationVector(Integer.parseInt(arguments.get("method_coefficient"))*8);
+        Server.vector = initVector;
+        Server.stringInitVector = convertInitVector(vector);
+        Server.stringKey = ServerThread.convertKeyToString(Server.Key);
 
 
         //write keys and vectors
@@ -48,6 +48,20 @@ public class Server {
         }
     }
 
+    public static HashMap<String, String> argumentParser(String path) throws IOException {
+        String content = MyFileReader.fileReader(path);
+
+       HashMap<String,String> args = new HashMap<String,String>();
+        for(String line: content.split("\n")){
+            if (line.charAt(0) == '#'){
+                // comment line
+                continue;
+            }
+            String[] lineArray = line.split("=");
+            args.put(lineArray[0], lineArray[1]);
+        }
+        return args;
+    }
 
     public static String convertInitVector(byte[] initVector){
         String realInitVector = "";

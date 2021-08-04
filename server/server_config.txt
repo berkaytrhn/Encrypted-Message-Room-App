@@ -1,0 +1,15 @@
+# for comment line, do not left blank lines
+# -----key_size-----
+# AES -> 256
+# DES -> 56
+# ----method_coefficient----
+# AES -> 2
+# DES -> 1
+port=8080
+method=AES
+# can be also 'OFB'
+mode=CBC
+key_size=256
+method_coefficient=2
+encrypted_log=server_base64_log.txt
+standard_log=server_log.txt

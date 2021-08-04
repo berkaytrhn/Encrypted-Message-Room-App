@@ -1,0 +1,3 @@
+# for comment line, do not left blank lines
+port=8080
+server=localhost
