@@ -1,3 +1,4 @@
+package tr.com.realrioden.message_room_application.server;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;

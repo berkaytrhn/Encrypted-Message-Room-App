@@ -1,3 +1,4 @@
+package tr.com.realrioden.message_room_application.client;
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
@@ -6,7 +7,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.util.Base64;
 
-public class MyCrypt {
+public class ClientMyCrypt {
     public static SecretKey generateKey(String method, int keyBitSize) throws Exception {
         KeyGenerator keygenerator = KeyGenerator.getInstance(method);
         SecureRandom secure = new SecureRandom();

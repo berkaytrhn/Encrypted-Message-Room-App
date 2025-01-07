@@ -1,3 +1,4 @@
+package tr.com.realrioden.message_room_application.client;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.net.*;

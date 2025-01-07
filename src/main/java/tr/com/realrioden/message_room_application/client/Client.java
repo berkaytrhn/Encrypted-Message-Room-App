@@ -1,3 +1,4 @@
+package tr.com.realrioden.message_room_application.client;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;

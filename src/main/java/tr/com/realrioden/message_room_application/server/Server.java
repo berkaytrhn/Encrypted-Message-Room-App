@@ -1,3 +1,4 @@
+package tr.com.realrioden.message_room_application.server;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;

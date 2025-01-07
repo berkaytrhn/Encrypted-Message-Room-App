@@ -1,3 +1,4 @@
+package tr.com.realrioden.message_room_application.client;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;

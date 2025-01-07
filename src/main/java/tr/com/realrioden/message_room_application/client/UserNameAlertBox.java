@@ -1,3 +1,4 @@
+package tr.com.realrioden.message_room_application.client;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
