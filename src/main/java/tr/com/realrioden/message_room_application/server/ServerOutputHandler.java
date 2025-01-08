@@ -9,8 +9,8 @@ public class ServerOutputHandler {
 
     public static void writeLogFile(String message,boolean isFirstLoop) throws IOException {
         //performs writing to log file and console
-        BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(Server.arguments.get("encrypted_log"),true));
-        BufferedWriter bufferedWriter2 = new BufferedWriter(new FileWriter(Server.arguments.get("standard_log"), true));
+        BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(ServerOld.arguments.get("encrypted_log"),true));
+        BufferedWriter bufferedWriter2 = new BufferedWriter(new FileWriter(ServerOld.arguments.get("standard_log"), true));
 
 
 
@@ -25,20 +25,20 @@ public class ServerOutputHandler {
 
             //Receive current timestamp
             Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-            key = Server.stringKey;
-            vector = Server.vector;
+            key = ServerOld.stringKey;
+            vector = ServerOld.vector;
 
             //convert to base64
             keyBase64 = Base64.getEncoder().encodeToString(key.getBytes());
             vectorBase64 = Base64.getEncoder().encodeToString(vector);
 
             bufferedWriter.write(String.format("%s || STARTED SERVER ||\n", timestamp));
-            bufferedWriter.write(String.format("%s || SERVER INFO || %s(%s) : %s\n", "Key", timestamp, Server.arguments.get("method"),keyBase64));
-            bufferedWriter.write(String.format("%s || SERVER INFO || %s(%s) : %s\n", "IV",  timestamp, Server.arguments.get("method"), vectorBase64));
+            bufferedWriter.write(String.format("%s || SERVER INFO || %s(%s) : %s\n", "Key", timestamp, ServerOld.arguments.get("method"),keyBase64));
+            bufferedWriter.write(String.format("%s || SERVER INFO || %s(%s) : %s\n", "IV",  timestamp, ServerOld.arguments.get("method"), vectorBase64));
 
             bufferedWriter2.write(String.format("%s || STARTED SERVER ||\n", timestamp));
-            bufferedWriter2.write(String.format("%s || SERVER INFO || %s(%s) : %s\n", "Key", timestamp, Server.arguments.get("method"),Server.stringKey));
-            bufferedWriter2.write(String.format("%s || SERVER INFO || %s(%s) : %s\n", "IV", timestamp, Server.arguments.get("method"), Server.stringInitVector));
+            bufferedWriter2.write(String.format("%s || SERVER INFO || %s(%s) : %s\n", "Key", timestamp, ServerOld.arguments.get("method"),ServerOld.stringKey));
+            bufferedWriter2.write(String.format("%s || SERVER INFO || %s(%s) : %s\n", "IV", timestamp, ServerOld.arguments.get("method"), ServerOld.stringInitVector));
 
             System.out.println(String.format("%s || STARTED SERVER ||", timestamp));
             System.out.println("Key -> "+keyBase64);

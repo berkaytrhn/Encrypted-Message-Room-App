@@ -5,7 +5,7 @@ import java.net.Socket;
 import java.util.HashMap;
 import javax.crypto.SecretKey;
 
-public class Server {
+public class ServerOld {
     public static String stringInitVector;
     public static SecretKey Key;
     public static String stringKey;
@@ -16,7 +16,7 @@ public class Server {
     public static void main(String[] args) throws Exception {
         try {
             String configPath = args[0];
-            arguments = Server.argumentParser(configPath);
+            arguments = ServerOld.argumentParser(configPath);
         }catch(ArrayIndexOutOfBoundsException e){
             System.out.println("An error occurred, possible solutions: 'running with config file argument' or 'checking config file contents.'");
             return;
@@ -27,11 +27,11 @@ public class Server {
 
         //creating keys and init vectors
 
-        Server.Key = MyCrypt.generateKey(arguments.get("method"),Integer.parseInt(arguments.get("key_size")));
+        ServerOld.Key = MyCrypt.generateKey(arguments.get("method"),Integer.parseInt(arguments.get("key_size")));
         byte[] initVector = MyCrypt.createInitializationVector(Integer.parseInt(arguments.get("method_coefficient"))*8);
-        Server.vector = initVector;
-        Server.stringInitVector = convertInitVector(vector);
-        Server.stringKey = ServerThread.convertKeyToString(Server.Key);
+        ServerOld.vector = initVector;
+        ServerOld.stringInitVector = convertInitVector(vector);
+        ServerOld.stringKey = ServerThread.convertKeyToString(ServerOld.Key);
 
 
         //write keys and vectors

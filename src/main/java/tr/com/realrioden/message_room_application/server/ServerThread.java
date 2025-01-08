@@ -19,13 +19,13 @@ public class ServerThread implements Runnable{
         this.threads = threads;
 
         //sending init vectors, successful
-        sendReceivedMessage(Server.stringInitVector);
+        sendReceivedMessage(ServerOld.stringInitVector);
 
 
 
         //sending secret keys ,successful
         //KEY AES
-        sendReceivedMessage(String.format("%s %s %s",Server.stringKey,Server.arguments.get("method"), Server.arguments.get("mode")));
+        sendReceivedMessage(String.format("%s %s %s",ServerOld.stringKey,ServerOld.arguments.get("method"), ServerOld.arguments.get("mode")));
     }
 
     public void startCommunicationThread(){
