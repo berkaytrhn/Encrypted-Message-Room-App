@@ -1,0 +1,20 @@
+server.port:8081
+
+
+# AES key.size -> 256
+# DES key.size -> 56
+# AES key.coefficient -> 2
+# DES key.coefficient -> 1
+# encryption.method -> AES, DES
+# encryption.mode -> CBC, CFB 
+
+key:
+	size: 256
+	coefficient: 2
+
+encryption:
+	method: AES
+	mode: CBC
+	encrypted_log: server_base64_log.txt
+	standart_log: server_log.txt
+	
