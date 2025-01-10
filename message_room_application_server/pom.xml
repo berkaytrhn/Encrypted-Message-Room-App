@@ -4,11 +4,11 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>tr.com.realrioden</groupId>
-	<artifactId>message_room_application</artifactId>
+	<artifactId>message_room_application_server</artifactId>
 	<version>0.0.1</version>
 	<packaging>jar</packaging>
 
-	<name>message_room_application</name>
+	<name>message_room_application_server</name>
 	<url>http://maven.apache.org</url>
 
 	<properties>
