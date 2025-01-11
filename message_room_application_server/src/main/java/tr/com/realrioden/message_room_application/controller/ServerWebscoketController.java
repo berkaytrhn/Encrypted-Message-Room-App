@@ -1,13 +1,13 @@
-package tr.com.realrioden.message_room_application.server;
+package tr.com.realrioden.message_room_application.controller;
 
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Controller;
 
-@Controller
-public class ServerController {
+import tr.com.realrioden.message_room_application.server.Message;
 
-	
-	
+@Controller
+public class ServerWebscoketController {
+
 	
 	@MessageMapping("/sendMessage")
 	public void sendMessageToRoom(Message message) {
