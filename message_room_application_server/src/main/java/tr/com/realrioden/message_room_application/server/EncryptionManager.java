@@ -11,8 +11,10 @@ import javax.crypto.spec.IvParameterSpec;
 
 import org.springframework.stereotype.Component;
 
+import tr.com.realrioden.message_room_application.service.EncryptionService;
+
 @Component
-public class EncryptionManager {
+public class EncryptionManager implements EncryptionService{
 
 	
 	public SecretKey generateKey(String method, int keyBitSize) throws Exception {
